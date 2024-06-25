@@ -52,25 +52,31 @@ function Form({ addItem }) {
 	);
 }
 
-function PackingList({ items }) {
+function PackingList({ items, removeItem }) {
 	return (
 		<div className='list'>
 			<ul>
 				{items.map((item) => (
-					<Item key={item.id} item={item} />
+					<Item key={item.id} item={item} removeItem={removeItem} />
 				))}
 			</ul>
 		</div>
 	);
 }
 
-function Item({ item }) {
+function Item({ item, removeItem }) {
+	const itemHandler = (e, id) => {
+		e.preventDefault();
+		console.log("clicked");
+		removeItem(id);
+	};
+
 	return (
 		<li>
 			<span style={item.packed ? { textDecoration: "line-through" } : {}}>
 				{item.quantity} {item.description}
 			</span>
-			<button> ❌ </button>
+			<button onClick={(e) => itemHandler(e, item.id)}> ❌ </button>
 		</li>
 	);
 }
@@ -95,11 +101,16 @@ const App = () => {
 		setItems([...items, item]);
 	};
 
+	const removeItem = (id) => {
+		const removedItems = items.filter((item) => item.id !== id);
+		setItems([...removedItems]);
+	};
+
 	return (
 		<div className='app'>
 			<Logo />
 			<Form addItem={addItem} />
-			<PackingList items={items} />
+			<PackingList items={items} removeItem={removeItem} />
 			<Stat items={items} />
 		</div>
 	);
