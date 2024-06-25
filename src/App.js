@@ -52,19 +52,24 @@ function Form({ addItem }) {
 	);
 }
 
-function PackingList({ items, removeItem }) {
+function PackingList({ items, removeItem, toggleHandler }) {
 	return (
 		<div className='list'>
 			<ul>
 				{items.map((item) => (
-					<Item key={item.id} item={item} removeItem={removeItem} />
+					<Item
+						key={item.id}
+						item={item}
+						removeItem={removeItem}
+						toggleHandler={toggleHandler}
+					/>
 				))}
 			</ul>
 		</div>
 	);
 }
 
-function Item({ item, removeItem }) {
+function Item({ item, removeItem, toggleHandler }) {
 	const itemHandler = (e, id) => {
 		e.preventDefault();
 		console.log("clicked");
@@ -73,6 +78,11 @@ function Item({ item, removeItem }) {
 
 	return (
 		<li>
+			<input
+				type='checkbox'
+				value={item.packed}
+				onChange={() => toggleHandler(item.id)}
+			/>
 			<span style={item.packed ? { textDecoration: "line-through" } : {}}>
 				{item.quantity} {item.description}
 			</span>
@@ -95,7 +105,7 @@ function Stat({ items }) {
 }
 
 const App = () => {
-	const [items, setItems] = useState(initialItems);
+	const [items, setItems] = useState([]);
 
 	const addItem = (item) => {
 		setItems([...items, item]);
@@ -106,11 +116,23 @@ const App = () => {
 		setItems([...removedItems]);
 	};
 
+	const toggleHandler = (id) => {
+		setItems((items) =>
+			items.map((item) =>
+				item.id === id ? { ...item, packed: !item.packed } : item
+			)
+		);
+	};
+
 	return (
 		<div className='app'>
 			<Logo />
 			<Form addItem={addItem} />
-			<PackingList items={items} removeItem={removeItem} />
+			<PackingList
+				items={items}
+				removeItem={removeItem}
+				toggleHandler={toggleHandler}
+			/>
 			<Stat items={items} />
 		</div>
 	);
